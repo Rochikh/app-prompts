@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rochane's Prompt Bank</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Banque de Prompts</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --primary: #4f46e5; /* Indigo */
-            --bg: #f3f4f6;
+            --primary: #4f46e5;
+            --primary-light: #e0e7ff;
+            --bg: #f8fafc;
             --card-bg: #ffffff;
-            --text: #111827;
-            --text-light: #6b7280;
-            --border: #e5e7eb;
+            --text: #0f172a;
+            --text-light: #64748b;
+            --border: #e2e8f0;
         }
 
         body {
@@ -26,38 +27,39 @@
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1100px;
             margin: 0 auto;
         }
 
-        /* Header et Recherche */
+        /* Header */
         header {
             text-align: center;
-            margin-bottom: 50px;
+            margin-bottom: 40px;
         }
 
         h1 { 
             font-weight: 800; 
             color: var(--text); 
-            margin-bottom: 20px;
+            margin-bottom: 24px;
             font-size: 2.5rem;
-            letter-spacing: -0.025em;
+            letter-spacing: -0.03em;
         }
         
+        /* Zone de Recherche */
         .search-wrapper {
             position: relative;
             max-width: 600px;
-            margin: 0 auto;
+            margin: 0 auto 20px auto;
         }
 
         .search-box {
             width: 100%;
             padding: 16px 24px;
-            border-radius: 12px;
+            border-radius: 50px;
             border: 2px solid transparent;
             font-size: 16px;
             background: white;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             outline: none;
             transition: all 0.2s ease;
             box-sizing: border-box;
@@ -65,14 +67,45 @@
 
         .search-box:focus {
             border-color: var(--primary);
-            transform: translateY(-1px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
-        /* Grille des Prompts */
+        /* Zone des Filtres (Nouveau) */
+        .filters-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 40px;
+        }
+
+        .filter-btn {
+            background: white;
+            border: 1px solid var(--border);
+            color: var(--text-light);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Grille */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 24px;
         }
 
@@ -84,59 +117,62 @@
             transition: all 0.2s ease;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
             height: 100%;
             box-sizing: border-box;
         }
 
         .card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            border-color: var(--primary);
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-light);
         }
 
-        .card-header {
-            margin-bottom: 16px;
-        }
+        .card-header { margin-bottom: 16px; }
 
-        .meta-tags {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-bottom: 12px;
-        }
-
-        .tag {
-            background: #e0e7ff;
+        .category-badge {
+            display: inline-block;
+            background: var(--primary-light);
             color: var(--primary);
             padding: 4px 10px;
-            border-radius: 20px;
+            border-radius: 6px;
             font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 0.025em;
+            font-weight: 700;
             text-transform: uppercase;
+            margin-bottom: 10px;
+            letter-spacing: 0.05em;
         }
 
-        h3 { 
-            margin: 0; 
-            font-size: 18px; 
-            font-weight: 700;
-            color: var(--text);
+        h3 { margin: 0; font-size: 18px; font-weight: 700; line-height: 1.4; }
+
+        .keywords {
+            margin-top: 8px;
+            font-size: 12px;
+            color: var(--text-light);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
         }
+
+        .keyword-tag {
+            cursor: pointer;
+            text-decoration: underline;
+            text-decoration-style: dotted;
+        }
+        .keyword-tag:hover { color: var(--primary); }
 
         .preview {
+            flex-grow: 1;
             font-size: 14px;
-            color: var(--text-light);
-            margin-bottom: 24px;
-            background: #f9fafb;
+            color: #475569;
+            margin-bottom: 20px;
+            background: #f1f5f9;
             padding: 12px;
             border-radius: 8px;
-            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
-            border: 1px solid var(--border);
-            
-            /* Coupe le texte proprement après 4 lignes */
+            font-family: 'Menlo', monospace;
+            line-height: 1.6;
+            /* Limite à 5 lignes avec ... */
             display: -webkit-box;
-            -webkit-line-clamp: 4;
+            -webkit-line-clamp: 5;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
@@ -150,8 +186,7 @@
             border-radius: 10px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 14px;
-            transition: all 0.2s;
+            transition: background 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -159,25 +194,18 @@
         }
 
         .btn-copy:hover { background: var(--primary); }
-        
-        .btn-copy.copied {
-            background: #10b981; /* Vert succès */
-        }
+        .btn-copy.copied { background: #10b981; }
 
-        #loading { 
-            text-align: center; 
-            font-size: 1.1rem; 
-            color: var(--text-light); 
-            margin-top: 40px;
-            animation: pulse 2s infinite;
-        }
+        #loading { text-align: center; margin-top: 40px; color: var(--text-light); }
 
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
+        /* Empty State */
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            color: var(--text-light);
+            font-style: italic;
         }
-
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 </head>
@@ -185,117 +213,165 @@
 
 <div class="container">
     <header>
-        <h1>⚡ Rochane's Prompts</h1>
+        <h1>⚡ Rochane's Prompt Bank</h1>
+        
         <div class="search-wrapper">
-            <input type="text" id="searchInput" class="search-box" placeholder="Rechercher un prompt, une catégorie...">
+            <input type="text" id="searchInput" class="search-box" placeholder="Rechercher (ex: email, code, marketing)...">
         </div>
+
+        <div id="filtersContainer" class="filters-container"></div>
     </header>
 
-    <div id="loading">Chargement de la banque de prompts...</div>
+    <div id="loading">Chargement des données...</div>
     <div id="grid" class="grid"></div>
 </div>
 
 <script>
-    // =================================================================
-    // 1. CONFIGURATION (Ton lien est inséré ici)
-    // =================================================================
-    
+    // CONFIGURATION
     const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSjnxIJ_ntHf3PZhiiekPPZzTFHPQ_24u_ffnhfoKDgCtUXElOqGH7pUfj0xc8yLVEz0zhoz9RpgRA8/pub?output=csv";
 
-    // =================================================================
-    // 2. LE MOTEUR DU SITE
-    // =================================================================
+    // VARIABLES GLOBALES
+    let allPrompts = [];
+    let activeCategory = 'Tous';
 
     const grid = document.getElementById('grid');
     const searchInput = document.getElementById('searchInput');
+    const filtersContainer = document.getElementById('filtersContainer');
     const loading = document.getElementById('loading');
-    let allPrompts = [];
 
-    // Initialisation
+    // INIT
     function init() {
         Papa.parse(SHEET_URL, {
             download: true,
             header: true,
             skipEmptyLines: true,
             complete: function(results) {
-                console.log("Données reçues:", results.data); // Pour le debug
-                allPrompts = results.data;
+                allPrompts = results.data.filter(p => p.Titre && p.Titre.trim() !== ""); // Nettoyage
                 loading.style.display = 'none';
+                
+                generateFilters(allPrompts);
                 renderPrompts(allPrompts);
             },
             error: function(err) {
                 loading.innerHTML = "❌ Erreur de chargement. Vérifie le lien Google Sheet.";
-                console.error(err);
             }
         });
     }
 
-    // Affichage des cartes
+    // 1. GÉNÉRER LES BOUTONS FILTRES AUTOMATIQUEMENT
+    function generateFilters(data) {
+        // Récupérer toutes les catégories uniques
+        const categories = new Set();
+        data.forEach(p => {
+            if(p.Categorie) categories.add(p.Categorie.trim());
+        });
+
+        // Convertir en tableau et trier
+        const sortedCategories = ['Tous', ...Array.from(categories).sort()];
+
+        // Créer les boutons HTML
+        filtersContainer.innerHTML = sortedCategories.map(cat => `
+            <button class="filter-btn ${cat === 'Tous' ? 'active' : ''}" 
+                    onclick="filterBy('${cat}')">
+                ${cat}
+            </button>
+        `).join('');
+    }
+
+    // 2. FONCTION DE FILTRAGE (Click sur bouton)
+    window.filterBy = function(categoryName) {
+        activeCategory = categoryName;
+        
+        // Mettre à jour visuellement les boutons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if(btn.textContent.trim() === categoryName) btn.classList.add('active');
+        });
+
+        // Relancer l'affichage (ça prendra en compte la recherche aussi)
+        applyFilters();
+    }
+
+    // 3. MOTEUR DE RECHERCHE ET FILTRE GLOBAL
+    function applyFilters() {
+        const searchTerm = searchInput.value.toLowerCase();
+
+        const filtered = allPrompts.filter(p => {
+            // Filtre Catégorie
+            const matchCategory = (activeCategory === 'Tous') || (p.Categorie && p.Categorie.trim() === activeCategory);
+            
+            // Filtre Recherche Texte
+            const titre = p.Titre ? p.Titre.toLowerCase() : '';
+            const contenu = p.Contenu ? p.Contenu.toLowerCase() : '';
+            const tags = p.MotsCles ? p.MotsCles.toLowerCase() : '';
+            const matchSearch = titre.includes(searchTerm) || contenu.includes(searchTerm) || tags.includes(searchTerm);
+
+            return matchCategory && matchSearch;
+        });
+
+        renderPrompts(filtered);
+    }
+
+    // Écouteur sur la barre de recherche
+    searchInput.addEventListener('input', applyFilters);
+
+    // 4. AFFICHAGE DES CARTES
     function renderPrompts(prompts) {
         grid.innerHTML = '';
         
         if(prompts.length === 0) {
-            grid.innerHTML = '<p style="text-align:center; width:100%; color:#666">Aucun prompt trouvé.</p>';
+            grid.innerHTML = '<div class="no-results">Aucun prompt ne correspond à votre recherche.</div>';
             return;
         }
 
         prompts.forEach(prompt => {
-            // Sécurité : on vérifie que le titre existe
-            if (!prompt.Titre) return;
-
             const card = document.createElement('div');
             card.className = 'card';
             
-            const categorie = prompt.Categorie ? prompt.Categorie : 'Général';
-            const contenu = prompt.Contenu ? prompt.Contenu : '';
-            
-            // On prépare le contenu pour l'affichage (on échappe les caractères dangereux)
-            const safeContent = escapeHtml(contenu);
+            const categorie = prompt.Categorie || 'Général';
+            // Gestion des mots clés (on les sépare par des virgules)
+            let tagsHtml = '';
+            if(prompt.MotsCles) {
+                tagsHtml = prompt.MotsCles.split(',').map(tag => 
+                    `<span class="keyword-tag" onclick="searchTag('${tag.trim()}')">#${tag.trim()}</span>`
+                ).join(' ');
+            }
+
+            const safeContent = escapeHtml(prompt.Contenu || '');
 
             card.innerHTML = `
                 <div class="card-header">
-                    <div class="meta-tags">
-                        <span class="tag">${escapeHtml(categorie)}</span>
-                    </div>
+                    <span class="category-badge">${escapeHtml(categorie)}</span>
                     <h3>${escapeHtml(prompt.Titre)}</h3>
+                    <div class="keywords">${tagsHtml}</div>
                 </div>
                 <div class="preview">${safeContent}</div>
                 <button class="btn-copy" onclick="copierTexte(this)">
-                    <span>📋 Copier le prompt</span>
+                    <span>📋 Copier</span>
                 </button>
                 <div style="display:none;" class="full-text">${safeContent}</div>
             `;
             
-            // On attache l'événement de clic proprement
+            // Attacher l'événement copie
             const btn = card.querySelector('.btn-copy');
-            btn.onclick = () => copierTexte(btn, contenu);
+            btn.onclick = () => copierTexte(btn, prompt.Contenu);
 
             grid.appendChild(card);
         });
     }
 
-    // Moteur de recherche
-    searchInput.addEventListener('input', (e) => {
-        const term = e.target.value.toLowerCase();
-        const filtered = allPrompts.filter(p => {
-            // On cherche dans le Titre, la Catégorie et les Mots Clés
-            const titre = p.Titre ? p.Titre.toLowerCase() : '';
-            const cat = p.Categorie ? p.Categorie.toLowerCase() : '';
-            const tags = p.MotsCles ? p.MotsCles.toLowerCase() : '';
-            
-            return titre.includes(term) || cat.includes(term) || tags.includes(term);
-        });
-        renderPrompts(filtered);
-    });
+    // Petite fonction bonus : cliquer sur un tag remplit la recherche
+    window.searchTag = function(tag) {
+        searchInput.value = tag;
+        applyFilters(); // Lance la recherche
+    }
 
-    // Fonction de copie intelligente
+    // COPIE PRESSE-PAPIER
     async function copierTexte(btn, texte) {
         try {
-            // Méthode moderne (fonctionne sur HTTPS / GitHub Pages)
             await navigator.clipboard.writeText(texte);
             succesCopie(btn);
         } catch (err) {
-            // Méthode de secours (si ancien navigateur)
             const textArea = document.createElement("textarea");
             textArea.value = texte;
             document.body.appendChild(textArea);
@@ -307,28 +383,22 @@
     }
 
     function succesCopie(btn) {
-        const originalText = btn.innerHTML;
+        const originalHTML = btn.innerHTML;
         btn.innerHTML = "<span>✅ Copié !</span>";
         btn.classList.add('copied');
-        
         setTimeout(() => {
-            btn.innerHTML = originalText;
+            btn.innerHTML = originalHTML;
             btn.classList.remove('copied');
         }, 2000);
     }
 
-    // Utilitaire de sécurité
     function escapeHtml(text) {
         if (!text) return "";
-        return text
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
+        return text.replace(/[&<>"']/g, function(m) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+        });
     }
 
-    // Lancement immédiat
     init();
 </script>
 
