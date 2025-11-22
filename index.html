@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rochane's Prompt Bank</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #4f46e5; /* Indigo */
+            --bg: #f3f4f6;
+            --card-bg: #ffffff;
+            --text: #111827;
+            --text-light: #6b7280;
+            --border: #e5e7eb;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 40px 20px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* Header et Recherche */
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        h1 { 
+            font-weight: 800; 
+            color: var(--text); 
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+            letter-spacing: -0.025em;
+        }
+        
+        .search-wrapper {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 16px 24px;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            font-size: 16px;
+            background: white;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            outline: none;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+
+        .search-box:focus {
+            border-color: var(--primary);
+            transform: translateY(-1px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Grille des Prompts */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border);
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+        }
+
+        .card-header {
+            margin-bottom: 16px;
+        }
+
+        .meta-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .tag {
+            background: #e0e7ff;
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.025em;
+            text-transform: uppercase;
+        }
+
+        h3 { 
+            margin: 0; 
+            font-size: 18px; 
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .preview {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 24px;
+            background: #f9fafb;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            border: 1px solid var(--border);
+            
+            /* Coupe le texte proprement après 4 lignes */
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .btn-copy {
+            width: 100%;
+            background: var(--text);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-copy:hover { background: var(--primary); }
+        
+        .btn-copy.copied {
+            background: #10b981; /* Vert succès */
+        }
+
+        #loading { 
+            text-align: center; 
+            font-size: 1.1rem; 
+            color: var(--text-light); 
+            margin-top: 40px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>⚡ Rochane's Prompts</h1>
+        <div class="search-wrapper">
+            <input type="text" id="searchInput" class="search-box" placeholder="Rechercher un prompt, une catégorie...">
+        </div>
+    </header>
+
+    <div id="loading">Chargement de la banque de prompts...</div>
+    <div id="grid" class="grid"></div>
+</div>
+
+<script>
+    // =================================================================
+    // 1. CONFIGURATION (Ton lien est inséré ici)
+    // =================================================================
+    
+    const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSjnxIJ_ntHf3PZhiiekPPZzTFHPQ_24u_ffnhfoKDgCtUXElOqGH7pUfj0xc8yLVEz0zhoz9RpgRA8/pub?output=csv";
+
+    // =================================================================
+    // 2. LE MOTEUR DU SITE
+    // =================================================================
+
+    const grid = document.getElementById('grid');
+    const searchInput = document.getElementById('searchInput');
+    const loading = document.getElementById('loading');
+    let allPrompts = [];
+
+    // Initialisation
+    function init() {
+        Papa.parse(SHEET_URL, {
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            complete: function(results) {
+                console.log("Données reçues:", results.data); // Pour le debug
+                allPrompts = results.data;
+                loading.style.display = 'none';
+                renderPrompts(allPrompts);
+            },
+            error: function(err) {
+                loading.innerHTML = "❌ Erreur de chargement. Vérifie le lien Google Sheet.";
+                console.error(err);
+            }
+        });
+    }
+
+    // Affichage des cartes
+    function renderPrompts(prompts) {
+        grid.innerHTML = '';
+        
+        if(prompts.length === 0) {
+            grid.innerHTML = '<p style="text-align:center; width:100%; color:#666">Aucun prompt trouvé.</p>';
+            return;
+        }
+
+        prompts.forEach(prompt => {
+            // Sécurité : on vérifie que le titre existe
+            if (!prompt.Titre) return;
+
+            const card = document.createElement('div');
+            card.className = 'card';
+            
+            const categorie = prompt.Categorie ? prompt.Categorie : 'Général';
+            const contenu = prompt.Contenu ? prompt.Contenu : '';
+            
+            // On prépare le contenu pour l'affichage (on échappe les caractères dangereux)
+            const safeContent = escapeHtml(contenu);
+
+            card.innerHTML = `
+                <div class="card-header">
+                    <div class="meta-tags">
+                        <span class="tag">${escapeHtml(categorie)}</span>
+                    </div>
+                    <h3>${escapeHtml(prompt.Titre)}</h3>
+                </div>
+                <div class="preview">${safeContent}</div>
+                <button class="btn-copy" onclick="copierTexte(this)">
+                    <span>📋 Copier le prompt</span>
+                </button>
+                <div style="display:none;" class="full-text">${safeContent}</div>
+            `;
+            
+            // On attache l'événement de clic proprement
+            const btn = card.querySelector('.btn-copy');
+            btn.onclick = () => copierTexte(btn, contenu);
+
+            grid.appendChild(card);
+        });
+    }
+
+    // Moteur de recherche
+    searchInput.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase();
+        const filtered = allPrompts.filter(p => {
+            // On cherche dans le Titre, la Catégorie et les Mots Clés
+            const titre = p.Titre ? p.Titre.toLowerCase() : '';
+            const cat = p.Categorie ? p.Categorie.toLowerCase() : '';
+            const tags = p.MotsCles ? p.MotsCles.toLowerCase() : '';
+            
+            return titre.includes(term) || cat.includes(term) || tags.includes(term);
+        });
+        renderPrompts(filtered);
+    });
+
+    // Fonction de copie intelligente
+    async function copierTexte(btn, texte) {
+        try {
+            // Méthode moderne (fonctionne sur HTTPS / GitHub Pages)
+            await navigator.clipboard.writeText(texte);
+            succesCopie(btn);
+        } catch (err) {
+            // Méthode de secours (si ancien navigateur)
+            const textArea = document.createElement("textarea");
+            textArea.value = texte;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand("Copy");
+            textArea.remove();
+            succesCopie(btn);
+        }
+    }
+
+    function succesCopie(btn) {
+        const originalText = btn.innerHTML;
+        btn.innerHTML = "<span>✅ Copié !</span>";
+        btn.classList.add('copied');
+        
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.classList.remove('copied');
+        }, 2000);
+    }
+
+    // Utilitaire de sécurité
+    function escapeHtml(text) {
+        if (!text) return "";
+        return text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    // Lancement immédiat
+    init();
+</script>
+
+</body>
+</html>
